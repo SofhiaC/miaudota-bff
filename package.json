@@ -1,0 +1,40 @@
+{
+  "name": "miaudota-bff",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "start:bff": "node dist/bff-mobile/main.js",
+    "start:gateway": "node dist/api-gateway/main.js",
+    "start:notificacao": "node dist/notificacao/main.js",
+    "dev": "concurrently -k -n bff,api,notificacao \\\"node --watch dist/bff-mobile/main.js\\\" \\\"node --watch dist/api-gateway/main.js\\\" \\\"node --watch dist/notificacao/main.js\\\"",
+    "start:all": "npm run build && npm run dev",
+    "test": "tsc -p tsconfig.json && node --test \"dist/testes/*.test.js\""
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.4.0",
+    "@nestjs/core": "^10.4.0",
+    "@nestjs/jwt": "^10.2.0",
+    "@nestjs/mongoose": "^10.1.0",
+    "@nestjs/platform-express": "^10.4.0",
+    "@nestjs/swagger": "^7.4.0",
+    "amqplib": "^0.10.4",
+    "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.7.0",
+    "mssql": "^11.0.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.21",
+    "@types/mssql": "^9.1.5",
+    "@types/node": "^20.14.0",
+    "concurrently": "^9.0.0",
+    "typescript": "^5.5.0"
+  }
+}
