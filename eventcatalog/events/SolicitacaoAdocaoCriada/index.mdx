@@ -1,0 +1,85 @@
+---
+id: SolicitacaoAdocaoCriada
+name: Solicitação de adoção criada
+version: 1.0.0
+summary: "Uma pessoa pediu para adotar um animal. Avisa por e-mail quem cuida do animal."
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+schemaPath: schema.json
+repository:
+  language: TypeScript
+  url: https://github.com/SofhiaC/miaudota-ms-mongo
+badges:
+  - content: RabbitMQ
+    backgroundColor: orange
+    textColor: orange
+---
+
+## Visão geral
+
+Uma pessoa pediu para adotar um animal. Avisa por e-mail quem cuida do animal.
+
+- **Publicado por:** Microsserviço de Adoção
+- **Consumido por:** Serviço de Notificação
+- **Quando é publicado:** Depois que a solicitação é gravada. O evento já leva o e-mail do dono do animal e o nome do adotante, para o consumidor não precisar consultar outro serviço (decisão 9.8 do arc42).
+
+<NodeGraph />
+
+## Roteamento no RabbitMQ
+
+| Item | Valor |
+|---|---|
+| Exchange | `miaudota.eventos` (tipo `topic`, durável) |
+| Chave de roteamento | `SolicitacaoAdocaoCriada` |
+| Filas dos consumidores | veja abaixo (uma por serviço que assina) |
+| Fila de descarte (DLQ) | `<fila>.dlq`, ligada ao exchange `miaudota.eventos.descarte` |
+
+Filas deste evento:
+
+- `notificacao.SolicitacaoAdocaoCriada` (descarte: `notificacao.SolicitacaoAdocaoCriada.dlq`)
+
+## Mensagem
+
+Toda mensagem tem o mesmo envelope: `id`, `nome`, `ocorridoEm` e `dados`. O conteúdo de `dados` é:
+
+| Campo | Obrigatório | Descrição |
+|---|---|---|
+| `solicitacaoId` | sim | Id da solicitação. |
+| `animalId` | sim | Id do animal pedido. |
+| `animalNome` | sim | Nome do animal. |
+| `destinatarioEmail` | não | E-mail do dono do animal. Ausente se o serviço de usuários estava fora do ar. |
+| `adotanteNome` | não | Nome de quem pediu a adoção. Ausente se o serviço de usuários estava fora do ar. |
+
+Exemplo:
+
+```json
+{
+  "id": "3b9a6f2e-7c1d-4e58-9a0b-5d2f8c41e7a6",
+  "nome": "SolicitacaoAdocaoCriada",
+  "ocorridoEm": "2026-11-08T03:15:42.123Z",
+  "dados": {
+    "solicitacaoId": "6660a1b2c3d4e5f600112233",
+    "animalId": "665f2a3b4c5d6e7f00889900",
+    "animalNome": "Mel",
+    "destinatarioEmail": "contato@patasfelizes.org",
+    "adotanteNome": "Maria Souza"
+  }
+}
+```
+
+O schema completo (JSON Schema) está na aba **Schema** desta página.
+
+## O que o consumidor faz
+
+O serviço de notificação envia ao dono do animal o aviso "Novo pedido de adoção". Sem `destinatarioEmail`, a notificação é ignorada com um aviso no log (a solicitação continua válida).
+
+## Garantias e falhas
+
+- **Entrega:** pelo menos uma vez (*at-least-once*). A mensagem é persistente e a fila é durável.
+- **Falha no consumidor:** a mensagem recebe `nack` sem reenfileirar e vai para a fila `.dlq`, em vez de travar a fila ou se perder.
+- **Broker fora do ar:** quem publica guarda o evento em memória e envia quando a conexão volta.
+- **Dados pessoais:** só o nome do evento vai para o log; o conteúdo da mensagem não é registrado.
+- **Versionamento:** esta é a versão `1.0.0`. Mudanças que quebrem o contrato devem criar uma nova versão do evento.

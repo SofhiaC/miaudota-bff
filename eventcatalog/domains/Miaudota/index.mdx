@@ -1,0 +1,44 @@
+---
+id: Miaudota
+name: Miaudota
+version: 1.0.0
+summary: Plataforma de adoção de animais. Pessoas e ONGs cadastram animais, ONGs divulgam feiras de adoção e quem quer adotar pede a adoção.
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+services:
+  - id: ServicoUsuarios
+    version: 1.0.0
+  - id: ServicoAdocao
+    version: 1.0.0
+  - id: ServicoGeolocalizacao
+    version: 1.0.0
+  - id: ServicoNotificacao
+    version: 1.0.0
+---
+
+## Arquitetura orientada a eventos
+
+Os microsserviços não chamam uns aos outros para efeitos colaterais. Eles **publicam eventos de domínio** no RabbitMQ e quem se interessa assina. Isso mantém o usuário rápido (ele não espera o e-mail) e faz com que uma falha na notificação não desfaça a ação dele.
+
+<NodeGraph />
+
+## Eventos
+
+| Evento | Publicado por | Consumido por |
+|---|---|---|
+| `UsuarioCadastrado` | Usuários | Notificação |
+| `UsuarioExcluido` | Usuários | Adoção, Geolocalização |
+| `SolicitacaoAdocaoCriada` | Adoção | Notificação |
+| `FeiraCadastrada` | Geolocalização | Notificação |
+
+## Fluxo de e-mail
+
+1. Um serviço publica o evento no exchange `miaudota.eventos`.
+2. O serviço de notificação consome a fila dele e monta o e-mail.
+3. Ele chama o webhook do n8n (HTTPS/JSON), que envia a mensagem por SMTP.
+4. Se algo falhar, a mensagem vai para a fila `.dlq` e pode ser reenviada depois.
+
+Repositórios: [BFF e notificação](https://github.com/SofhiaC/miaudota-bff) · [Usuários e Adoção](https://github.com/SofhiaC/miaudota-ms-mongo) · [Geolocalização](https://github.com/SofhiaC/miaudota-ms-sql) · [Function](https://github.com/SofhiaC/miaudota-function) · [Frontend](https://github.com/SofhiaC/miaudota-frontend)

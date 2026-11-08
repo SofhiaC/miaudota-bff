@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UsuarioCadastrado",
+  "description": "Um novo usuário (PESSOA ou ONG) concluiu o cadastro. Dispara o e-mail de boas-vindas.",
+  "type": "object",
+  "required": [
+    "id",
+    "nome",
+    "ocorridoEm",
+    "dados"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identificador único da mensagem (gerado na publicação)."
+    },
+    "nome": {
+      "const": "UsuarioCadastrado",
+      "description": "Nome do evento; também é a chave de roteamento no RabbitMQ."
+    },
+    "ocorridoEm": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Momento em que o evento foi publicado (UTC)."
+    },
+    "dados": {
+      "type": "object",
+      "required": [
+        "usuarioId",
+        "nome",
+        "email",
+        "tipo"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "usuarioId": {
+          "type": "string",
+          "description": "Id do usuário (ObjectId do MongoDB)."
+        },
+        "nome": {
+          "type": "string",
+          "description": "Nome do usuário."
+        },
+        "email": {
+          "type": "string",
+          "description": "E-mail de destino das boas-vindas.",
+          "format": "email"
+        },
+        "tipo": {
+          "enum": [
+            "PESSOA",
+            "ONG"
+          ],
+          "description": "Tipo da conta."
+        }
+      }
+    }
+  }
+}

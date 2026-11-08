@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SolicitacaoAdocaoCriada",
+  "description": "Uma pessoa pediu para adotar um animal. Avisa por e-mail quem cuida do animal.",
+  "type": "object",
+  "required": [
+    "id",
+    "nome",
+    "ocorridoEm",
+    "dados"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identificador único da mensagem (gerado na publicação)."
+    },
+    "nome": {
+      "const": "SolicitacaoAdocaoCriada",
+      "description": "Nome do evento; também é a chave de roteamento no RabbitMQ."
+    },
+    "ocorridoEm": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Momento em que o evento foi publicado (UTC)."
+    },
+    "dados": {
+      "type": "object",
+      "required": [
+        "solicitacaoId",
+        "animalId",
+        "animalNome"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "solicitacaoId": {
+          "type": "string",
+          "description": "Id da solicitação."
+        },
+        "animalId": {
+          "type": "string",
+          "description": "Id do animal pedido."
+        },
+        "animalNome": {
+          "type": "string",
+          "description": "Nome do animal."
+        },
+        "destinatarioEmail": {
+          "type": "string",
+          "description": "E-mail do dono do animal. Ausente se o serviço de usuários estava fora do ar.",
+          "format": "email"
+        },
+        "adotanteNome": {
+          "type": "string",
+          "description": "Nome de quem pediu a adoção. Ausente se o serviço de usuários estava fora do ar."
+        }
+      }
+    }
+  }
+}

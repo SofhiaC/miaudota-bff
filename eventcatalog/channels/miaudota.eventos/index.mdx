@@ -1,0 +1,29 @@
+---
+id: miaudota.eventos
+name: Exchange miaudota.eventos
+version: 1.0.0
+summary: Exchange do tipo topic por onde passam todos os eventos de domínio do Miaudota.
+address: miaudota.eventos
+protocols:
+  - amqp
+deliveryGuarantee: at-least-once
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+---
+
+## Como funciona
+
+- Broker: **RabbitMQ** gerenciado (CloudAMQP, plano gratuito), protocolo AMQP.
+- Exchange `miaudota.eventos`, tipo `topic`, durável. A **chave de roteamento é o nome do evento**.
+- Cada serviço que assina um evento tem a própria fila durável `<serviço>.<Evento>` ligada a esse exchange. Assim, vários serviços recebem o mesmo evento (publicar/assinar).
+- Mensagens são persistentes (`persistent: true`) e em JSON (`application/json`).
+
+| Evento (chave de roteamento) | Filas que recebem |
+|---|---|
+| `UsuarioCadastrado` | `notificacao.UsuarioCadastrado` |
+| `UsuarioExcluido` | `adocao.UsuarioExcluido`, `geolocalizacao.UsuarioExcluido` |
+| `SolicitacaoAdocaoCriada` | `notificacao.SolicitacaoAdocaoCriada` |
+| `FeiraCadastrada` | `notificacao.FeiraCadastrada` |

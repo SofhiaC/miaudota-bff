@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UsuarioExcluido",
+  "description": "Um usuário excluiu a própria conta (LGPD). Os demais serviços apagam os dados que mantêm sobre ele.",
+  "type": "object",
+  "required": [
+    "id",
+    "nome",
+    "ocorridoEm",
+    "dados"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Identificador único da mensagem (gerado na publicação)."
+    },
+    "nome": {
+      "const": "UsuarioExcluido",
+      "description": "Nome do evento; também é a chave de roteamento no RabbitMQ."
+    },
+    "ocorridoEm": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Momento em que o evento foi publicado (UTC)."
+    },
+    "dados": {
+      "type": "object",
+      "required": [
+        "usuarioId",
+        "tipo"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "usuarioId": {
+          "type": "string",
+          "description": "Id do usuário excluído."
+        },
+        "tipo": {
+          "enum": [
+            "PESSOA",
+            "ONG"
+          ],
+          "description": "Tipo que a conta tinha."
+        }
+      }
+    }
+  }
+}

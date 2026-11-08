@@ -1,0 +1,22 @@
+---
+id: miaudota.eventos.descarte
+name: Exchange de descarte (DLQ)
+version: 1.0.0
+summary: Recebe as mensagens que o consumidor não conseguiu tratar, para não travar a fila nem perder a mensagem.
+address: miaudota.eventos.descarte
+protocols:
+  - amqp
+deliveryGuarantee: at-least-once
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+---
+
+## Como funciona
+
+- Exchange `miaudota.eventos.descarte`, tipo `direct`, durável.
+- Cada fila de trabalho foi criada com `x-dead-letter-exchange = miaudota.eventos.descarte` e `x-dead-letter-routing-key = <nome da fila>`.
+- Quando o consumidor lança erro, a mensagem recebe `nack` sem reenfileirar e cai em `<fila>.dlq` (por exemplo, `notificacao.UsuarioCadastrado.dlq`).
+- Para a notificação, o comando `npm run notificacao:reenviar` devolve as mensagens descartadas para a fila de trabalho, depois que o problema (por exemplo, n8n fora do ar) for resolvido.

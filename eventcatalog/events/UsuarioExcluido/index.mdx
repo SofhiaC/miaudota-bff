@@ -1,0 +1,80 @@
+---
+id: UsuarioExcluido
+name: Usuário excluído
+version: 1.0.0
+summary: "Um usuário excluiu a própria conta (LGPD). Os demais serviços apagam os dados que mantêm sobre ele."
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+schemaPath: schema.json
+repository:
+  language: TypeScript
+  url: https://github.com/SofhiaC/miaudota-ms-mongo
+badges:
+  - content: RabbitMQ
+    backgroundColor: orange
+    textColor: orange
+---
+
+## Visão geral
+
+Um usuário excluiu a própria conta (LGPD). Os demais serviços apagam os dados que mantêm sobre ele.
+
+- **Publicado por:** Microsserviço de Usuários
+- **Consumido por:** Microsserviço de Adoção, Microsserviço de Geolocalização
+- **Quando é publicado:** Depois que o registro do usuário é removido do banco de usuários (direito de exclusão da LGPD).
+
+<NodeGraph />
+
+## Roteamento no RabbitMQ
+
+| Item | Valor |
+|---|---|
+| Exchange | `miaudota.eventos` (tipo `topic`, durável) |
+| Chave de roteamento | `UsuarioExcluido` |
+| Filas dos consumidores | veja abaixo (uma por serviço que assina) |
+| Fila de descarte (DLQ) | `<fila>.dlq`, ligada ao exchange `miaudota.eventos.descarte` |
+
+Filas deste evento:
+
+- `adocao.UsuarioExcluido` (descarte: `adocao.UsuarioExcluido.dlq`)
+- `geolocalizacao.UsuarioExcluido` (descarte: `geolocalizacao.UsuarioExcluido.dlq`)
+
+## Mensagem
+
+Toda mensagem tem o mesmo envelope: `id`, `nome`, `ocorridoEm` e `dados`. O conteúdo de `dados` é:
+
+| Campo | Obrigatório | Descrição |
+|---|---|---|
+| `usuarioId` | sim | Id do usuário excluído. |
+| `tipo` | sim | Tipo que a conta tinha. |
+
+Exemplo:
+
+```json
+{
+  "id": "3b9a6f2e-7c1d-4e58-9a0b-5d2f8c41e7a6",
+  "nome": "UsuarioExcluido",
+  "ocorridoEm": "2026-11-08T03:15:42.123Z",
+  "dados": {
+    "usuarioId": "665f1c2e8b3a4d0012ab34cd",
+    "tipo": "ONG"
+  }
+}
+```
+
+O schema completo (JSON Schema) está na aba **Schema** desta página.
+
+## O que o consumidor faz
+
+Adoção apaga os animais do usuário e tudo que aponta para eles (favoritos e solicitações), além dos favoritos e pedidos que ele fez como adotante. Geolocalização apaga as feiras da ONG. Não leva dados pessoais, só o id.
+
+## Garantias e falhas
+
+- **Entrega:** pelo menos uma vez (*at-least-once*). A mensagem é persistente e a fila é durável.
+- **Falha no consumidor:** a mensagem recebe `nack` sem reenfileirar e vai para a fila `.dlq`, em vez de travar a fila ou se perder.
+- **Broker fora do ar:** quem publica guarda o evento em memória e envia quando a conexão volta.
+- **Dados pessoais:** só o nome do evento vai para o log; o conteúdo da mensagem não é registrado.
+- **Versionamento:** esta é a versão `1.0.0`. Mudanças que quebrem o contrato devem criar uma nova versão do evento.

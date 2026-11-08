@@ -1,0 +1,36 @@
+---
+id: ServicoAdocao
+name: Microsserviço de Adoção
+version: 1.0.0
+summary: "Animais, favoritos e solicitações de adoção. Dono do banco de adoção (MongoDB Atlas)."
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+sends:
+  - id: SolicitacaoAdocaoCriada
+    version: 1.0.0
+receives:
+  - id: UsuarioExcluido
+    version: 1.0.0
+repository:
+  language: TypeScript
+  url: https://github.com/SofhiaC/miaudota-ms-mongo
+---
+
+## Visão geral
+
+Animais, favoritos e solicitações de adoção. Dono do banco de adoção (MongoDB Atlas).
+
+Porta local 3102. Swagger em `/docs`.
+
+<NodeGraph />
+
+## Eventos
+
+- **Publica:** `SolicitacaoAdocaoCriada`
+- **Assina:** `UsuarioExcluido`
+- **Filas:** `adocao.UsuarioExcluido`
+
+Código-fonte: [miaudota-ms-mongo](https://github.com/SofhiaC/miaudota-ms-mongo)

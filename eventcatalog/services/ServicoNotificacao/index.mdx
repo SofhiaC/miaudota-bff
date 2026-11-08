@@ -1,0 +1,37 @@
+---
+id: ServicoNotificacao
+name: Serviço de Notificação
+version: 1.0.0
+summary: "Worker que consome os eventos e entrega cada e-mail ao webhook do n8n, que envia por SMTP. Não tem API HTTP."
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+receives:
+  - id: UsuarioCadastrado
+    version: 1.0.0
+  - id: SolicitacaoAdocaoCriada
+    version: 1.0.0
+  - id: FeiraCadastrada
+    version: 1.0.0
+repository:
+  language: TypeScript
+  url: https://github.com/SofhiaC/miaudota-bff
+---
+
+## Visão geral
+
+Worker que consome os eventos e entrega cada e-mail ao webhook do n8n, que envia por SMTP. Não tem API HTTP.
+
+Roda como container na Azure (`miaudota-notificacao`), sem URL pública. Se o n8n estiver fora do ar, a mensagem vai para a fila `.dlq`; depois de resolver, `npm run notificacao:reenviar` devolve as descartadas para a fila de trabalho.
+
+<NodeGraph />
+
+## Eventos
+
+- **Publica:** nenhum
+- **Assina:** `UsuarioCadastrado`, `SolicitacaoAdocaoCriada`, `FeiraCadastrada`
+- **Filas:** `notificacao.UsuarioCadastrado`, `notificacao.SolicitacaoAdocaoCriada` e `notificacao.FeiraCadastrada`
+
+Código-fonte: [miaudota-bff](https://github.com/SofhiaC/miaudota-bff)

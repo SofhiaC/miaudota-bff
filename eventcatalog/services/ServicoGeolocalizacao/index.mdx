@@ -1,0 +1,36 @@
+---
+id: ServicoGeolocalizacao
+name: Microsserviço de Geolocalização
+version: 1.0.0
+summary: "Feiras de adoção e consulta por proximidade. Dono do banco de feiras (Azure SQL)."
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+sends:
+  - id: FeiraCadastrada
+    version: 1.0.0
+receives:
+  - id: UsuarioExcluido
+    version: 1.0.0
+repository:
+  language: TypeScript
+  url: https://github.com/SofhiaC/miaudota-ms-sql
+---
+
+## Visão geral
+
+Feiras de adoção e consulta por proximidade. Dono do banco de feiras (Azure SQL).
+
+Porta local 3103. Swagger em `/docs`.
+
+<NodeGraph />
+
+## Eventos
+
+- **Publica:** `FeiraCadastrada`
+- **Assina:** `UsuarioExcluido`
+- **Filas:** `geolocalizacao.UsuarioExcluido`
+
+Código-fonte: [miaudota-ms-sql](https://github.com/SofhiaC/miaudota-ms-sql)

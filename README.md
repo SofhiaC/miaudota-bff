@@ -31,6 +31,7 @@ Node.js 20, TypeScript, NestJS 10, Swagger (`@nestjs/swagger`), class-validator,
 - `GET /aggregated-data` — junta animais (MongoDB), feiras (Azure SQL) e o indicador da Azure Function numa resposta só
 - `/usuarios/*`, `/animais/*`, `/favoritos/*`, `/solicitacoes/*`, `/feiras/*` — encaminhados aos microsserviços
 - Swagger do BFF em `/docs`
+- Documentação dos eventos (RabbitMQ) em [`eventcatalog/`](eventcatalog): eventos, publicadores, consumidores, filas e DLQ
 
 ## Como executar
 

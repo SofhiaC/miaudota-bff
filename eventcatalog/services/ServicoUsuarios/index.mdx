@@ -1,0 +1,35 @@
+---
+id: ServicoUsuarios
+name: Microsserviço de Usuários
+version: 1.0.0
+summary: "Cadastro, login (JWT), perfil e exclusão de conta. Dono do banco de usuários (MongoDB Atlas)."
+owners:
+  - sofhia-chromiec
+  - fernanda-giacobbo
+  - julia-melo
+  - pedro-serafim
+sends:
+  - id: UsuarioCadastrado
+    version: 1.0.0
+  - id: UsuarioExcluido
+    version: 1.0.0
+repository:
+  language: TypeScript
+  url: https://github.com/SofhiaC/miaudota-ms-mongo
+---
+
+## Visão geral
+
+Cadastro, login (JWT), perfil e exclusão de conta. Dono do banco de usuários (MongoDB Atlas).
+
+Porta local 3101. Swagger em `/docs`.
+
+<NodeGraph />
+
+## Eventos
+
+- **Publica:** `UsuarioCadastrado`, `UsuarioExcluido`
+- **Assina:** nenhum
+- **Filas:** Não assina eventos.
+
+Código-fonte: [miaudota-ms-mongo](https://github.com/SofhiaC/miaudota-ms-mongo)
