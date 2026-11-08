@@ -50,11 +50,15 @@ docker run --rm -p 3000:3000 --env-file .env sofhiachromiec/pjbl-gateway:v1   # 
 docker run --rm --env-file .env sofhiachromiec/pjbl-notificacao:v1   # Worker de notificação (sem porta HTTP)
 ```
 
-URLs na nuvem: *(preencher após o deploy)*
+URLs na nuvem (Azure Container Apps):
 
 | Serviço | URL pública | Swagger |
 |---|---|---|
-| BFF Mobile (`GET /aggregated-data` + rotas proxy) | _a preencher_ | _a preencher_/docs |
+| BFF Mobile (`GET /aggregated-data` + rotas proxy) | https://miaudota-bff.proudground-4968a7f1.canadacentral.azurecontainerapps.io | https://miaudota-bff.proudground-4968a7f1.canadacentral.azurecontainerapps.io/docs |
+| API Gateway | https://miaudota-gateway.proudground-4968a7f1.canadacentral.azurecontainerapps.io | n/a (ponto de entrada, repassa ao BFF) |
+| Worker de notificação (sem porta HTTP) | sem URL pública (container `miaudota-notificacao` na Azure, consome a fila) | n/a |
+
+O frontend publicado (Azure Static Web Apps) está em https://red-mushroom-01f218510.4.azurestaticapps.net.
 
 ### 2. Localmente com Node
 
