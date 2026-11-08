@@ -29,6 +29,8 @@ export class ProxyController {
       metodo: req.method,
       corpo: temCorpo ? req.body : undefined,
       usuario,
+      // o BFF pode precisar de até ~28 s no pior caso (Azure Function fria); o gateway espera um pouco mais
+      timeoutMs: 35000,
     });
 
     res.status(r.status);
